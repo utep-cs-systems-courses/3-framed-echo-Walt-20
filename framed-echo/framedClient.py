@@ -34,9 +34,12 @@ outMessages = [
 ]
 
 for message in outMessages:
+    # Serialize the message using the built-in `bytes` function
+    serializedMessage = bytes(message)
+
     # Prefix the message with its length using a fixed-length prefix
-    prefix = len(message).to_bytes(4, byteorder='big')
-    framedMessage = prefix + message
+    prefix = len(serializedMessage).to_bytes(4, byteorder='big')
+    framedMessage = prefix + serializedMessage
 
     # Send the framed message to the server
     s.sendall(framedMessage)
@@ -56,8 +59,11 @@ while True:
     # Extract the message length from the prefix
     messageLength = int.from_bytes(prefix, byteorder='big')
 
-    # Receive the message content
-    message = s.recv(messageLength)
+    # Receive the serialized message content
+    serializedMessage = s.recv(messageLength)
+
+    # Deserialize the message using the built-in `bytes` function
+    message = bytes(serializedMessage)
 
 # Close the socket
 s.close()
